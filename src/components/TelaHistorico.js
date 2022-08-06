@@ -1,33 +1,15 @@
-import Header from "./Header";
 import styled from "styled-components";
+import Header from "./Header";
 import Footer from "./Footer";
 
 export default function TelaHistorico(){
-
-    function montarFooter(){
-        return(
-            <>
-               <h1>Hábitos</h1>
-               <h1>Loader</h1>
-               <h1>Histórico</h1> 
-            </>
-        );
-    }
-
-
-
-    const footer = montarFooter();
-
+    
     return(
         <>
-        <Header/>
-        <Container>
-            <div><h1>Histórico</h1></div>
-            <div><span>Em breve você poderá ver o histórico dos seus hábitos aqui!</span></div>
-        <Footer>
-            {footer}
-        </Footer>
-        </Container>
+            <Container>
+                <Header/>
+                <Footer />
+            </Container>
         </>
     );
 
@@ -35,15 +17,24 @@ export default function TelaHistorico(){
 
 
 const Container = styled.div`
-    
-    margin-top: 4px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
+    min-height: 100vh;
     background-color: #E5E5E5;
+    padding: 0 18px;
+    margin-bottom: 75px;
 
+    :-moz-last-node {
+        padding-bottom:20px;
+    }
 
-
+    span {
+        font-family: 'Lexend Deca', sans-serif;
+        font-size: 18px;
+        color: #666666;
+        line-height: 22px;
+    }
 `;
+
+
+
+
 

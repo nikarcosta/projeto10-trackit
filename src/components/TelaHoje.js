@@ -1,51 +1,14 @@
-import Header from "./Header";
 import styled from "styled-components";
+import Header from "./Header";
 import Footer from "./Footer";
 
 export default function TelaHoje(){
 
-    function montarFooter(){
-        return(
-            <>
-               <h1>Hábitos</h1>
-               <h1>Loader</h1>
-               <h1>Histórico</h1> 
-            </>
-        );
-    }
-
-    function mostrarHabito() {
-        
-        return(
-            <>
-            <div>
-                <h2>Ler capítulo de livro</h2>
-                <h1>Sequencia atual: 3 dias</h1>
-                <h1>Seu recorde: 5 dias</h1>
-            </div>
-            <div><ion-icon name="checkbox"></ion-icon></div>  
-            </>
-        );
-        
-    }
-
-
-
-    const footer = montarFooter();
-    const habito = mostrarHabito();
-
     return(
         <>
-        <Header/>
         <Container>
-            <div><h1>Segunda, 17/05</h1><h1>Nenhum hábito concluído ainda</h1></div>
-            <Habito>
-                {habito}
-            </Habito>
-            <div><span>Você não tem nenhum hábito cadastrado ainda. Adicione um hábito para começar a trackear!</span></div>
-        <Footer>
-            {footer}
-        </Footer>
+            <Header/>
+            <Footer/>
         </Container>
         </>
     );
@@ -54,38 +17,21 @@ export default function TelaHoje(){
 
 
 const Container = styled.div`
-    
-    margin-top: 4px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
+    min-height: 100vh;
     background-color: #E5E5E5;
+    padding: 0 18px;
+    margin-bottom: 75px;
 
-
-
-`;
-
-const Habito = styled.div`
-    background-color: #FFFFFF;
-    display: flex;
-    flex-direction: column;
-    align-self: start;
-
-    * {
-    margin: 5px 0;
+    :-moz-last-node {
+        padding-bottom:20px;
     }
 
-    input {
-    width: 303px;
-    height: 45px;
-    padding-left: 20px;
+    span {
+        font-family: 'Lexend Deca', sans-serif;
+        font-size: 18px;
+        color: #666666;
+        line-height: 22px;
     }
-
-    div {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
 `;
+
+

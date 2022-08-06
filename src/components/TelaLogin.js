@@ -1,39 +1,57 @@
 import styled from "styled-components";
-import logo from "../assets/logo.png";
 import { useContext, useState } from "react";
-import TokenContext from "../contexts/TokenContext"
 import UserContext from "../contexts/UserContext"
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { ThreeDots } from "react-loader-spinner";
+
+import logo from "../assets/logo.png";
+
 
 export default function TelaLogin(){
 
-    const BASE_URL = "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit";
+    const URL = "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit";
 
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
+    const [enable, setEnable] = useState(true);
 
     const { setUser } = useContext(UserContext);
-    const { setToken } = useContext(TokenContext);
 
     function handleLogin(e){
 
         e.preventDefault();
 
-        const promise = axios.post(`${BASE_URL}/auth/login`, {
+        const body = {
             email,
             password
-        });
+        }
+
+        const promise = axios.post(`${URL}/auth/login`, body);
 
         promise.then((response) => {
-            setUser(response.data);
-            setToken(response.data.token);
+            const {data} = response;
+
+            setUser({
+                id: data.id,
+                name: data.name,
+                image: data.image,
+                email: data.email,
+                token: data.token
+            });
+        
             navigate("/habitos");
         });
 
-        promise.catch((error) => console.log(error.response));
+        promise.catch((err) => {
+            const message = err.response.statusText;
+            alert(message);
+            setEmail("");
+            setPassword("");
+            setEnable(true);
+        });
 
     }
 
@@ -44,10 +62,11 @@ export default function TelaLogin(){
                     <input type="email" name="email" placeholder="email" value={email} onChange={(e) => setEmail(e.target.value)} required/>
                     <input type="password" name="password" placeholder="senha" value={password} onChange={(e) => setPassword(e.target.value)} required/>
                     <div>
-                        <button><span>Entrar</span></button>
+                        {
+                            enable ? <button type="submit"><span>Login</span></button> : <button type="submit"><ThreeDots width={303} height={15} color={"#FFFFFF"} /></button>
+                        }
                     </div>
                 </form>
-                <div><h1>Não tem uma conta? Cadastre-se!</h1></div>
             </>
         );
     }
@@ -57,7 +76,8 @@ export default function TelaLogin(){
         
         <Container>
             <div><img src={logo} alt="logo" /></div>
-            <FormularioLogin>{formLogin}</FormularioLogin> 
+            <FormularioLogin enable={enable}>{formLogin}</FormularioLogin>
+            <StyledLink to="/cadastro"><h1>Não tem uma conta? Cadastre-se!</h1></StyledLink>
         </Container>
         
     );
@@ -86,7 +106,7 @@ const FormularioLogin = styled.div`
     flex-direction: column;
     align-self: start;
     width: 100%;
-    margin-bottom: 100px;
+
 
     * {
         margin: 5px 0;
@@ -103,6 +123,8 @@ const FormularioLogin = styled.div`
         color: #DBDBDB;
         border-radius:5px;
         border: 1px solid #D5D5D5;
+        background: ${props => props.enable ? '#FFFFFF' : '#F2F2F2'};
+        pointer-events: ${props => props.enable ? 'auto' : 'none'};
     }
 
     button {
@@ -116,16 +138,23 @@ const FormularioLogin = styled.div`
         font-weight: 400;
         font-size: 20px;
         color: #FFFFFF;
+        pointer-events: ${props => props.enable ? 'auto' : 'none'};
+        opacity: ${props => props.enable ? '1' : '0.7'};
+        cursor: pointer;
     }
 
-    h1 {
-        font-family: 'Lexend Deca';
-        font-style: normal;
-        font-weight: 400;
-        font-size: 14px;
-        text-align: center;
-        text-decoration-line: underline;
-        color: #52B6FF;
+`;
+
+const StyledLink = styled(Link)`
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #52B6FF;
+    margin-bottom: 30px;
+    
+    &:hover{
+        text-decoration: underline;
     }
 `;
 
