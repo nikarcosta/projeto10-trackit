@@ -7,7 +7,6 @@ import { ThreeDots } from 'react-loader-spinner';
 import styled from "styled-components";
 import Header from "./Header";
 import Footer from "./Footer";
-import lixeira from "../assets/delete.png"
 
 export default function TelaHabitos(){
 
@@ -17,10 +16,12 @@ export default function TelaHabitos(){
     const token = user.token;
 
 
+    const [enable, setEnable] = useState(true);
     const [adicionarCardHabito, setAdicionarCardHabito] = useState(false);
-    const [diasSelecionados, setDiasSelecionados] = useState([]);
+    const [name, setName] = useState("");
+    const [days, setDays] = useState([]);
 
-    const diasDaSemana = [{day: "D", day: "S", day: "T", day: "Q", day: "Q", day: "S", day: "S"}];
+    const diasDaSemana = [{day: "D"}, {day: "S"}, {day: "T"}, {day: "Q"}, {day: "Q"}, {day: "S"}, {day: "S"}];
 
     const [listaDeHabitos, setListaDeHabitos] = useState([]);
 
@@ -30,10 +31,100 @@ export default function TelaHabitos(){
         }
     }
 
-    /*
-    function requisitarListaDeHabitos(){
+    
+    function renderizarTopoConteudo(){
+        return (
+            <>
+            <TopoConteudo>
+                    <h2>Meus Hábitos</h2>
+                    <button onClick={() => {
+                        setAdicionarCardHabito(true);
+                    }}>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0z" />
+                        </svg>
+                    </button>
+            </TopoConteudo>
+            {novoCardHabito}
+            </>
+        );
+    }
+
+
+    function renderizarCardAdicionarHabito() {
+
+        const botoesDiadaSemana = diasDaSemana.map((diaDaSemana, index) => {
+            return (
+                <BotaoDiaDaSemana type="button" enable={enable} key={index} id={index} days={days} onClick={() => selecionarDiaDaSemana(index) }>{diaDaSemana.day}</BotaoDiaDaSemana>
+            );
+        });
+
+        if(adicionarCardHabito){
+
+            return (
+                <ContainerHabito enable={enable} onSubmit={adicionarHabito}>
+                    <input type="text" id="name" value={name} placeholder="nome do hábito" onChange={(e) => setName(e.target.value)} required/>
+                    <Grid>
+                        {botoesDiadaSemana}
+                    </Grid>
+                    <ActionButtons enable={enable}>
+                        <button className="cancelar" onClick={() => setAdicionarCardHabito(false)}>Cancelar</button>
+                        {enable ? <button type="submit">Salvar</button> : <button type="submit"><ThreeDots width={303} height={15} color={"#FFFFFF"} /></button>}
+                    </ActionButtons>
+                </ContainerHabito >
+            );
+
+
+        }
+        
+    }
+
+    const novoCardHabito = renderizarCardAdicionarHabito();
+
+
+    function selecionarDiaDaSemana(index){
+        const selecionado = days.some(day => day === index);
+
+        if(!selecionado){
+            setDays([...days, index]);
+        }else{
+            const novosSelecionados = days.filter(day => day !== index);
+            setDays(novosSelecionados);
+        }
+    }
+
+
+    function adicionarHabito(event){
+        event.preventDefault();
+        setEnable(false);
+
+        const body = {
+            name,
+            days
+        };
+
+        const promise = axios.post(`${URL}/habits`, body, config);
+
+        promise.then((response) => {
+            const { data } = response;
+            setName("");
+            setDays([]);
+            setAdicionarCardHabito(false);
+            setEnable(true);
+            setListaDeHabitos([...listaDeHabitos, data]);
+        });
+
+        promise.catch((err) => {
+            const message = err.response.statusText;
+            alert(message);
+            setEnable(true);
+        })
+    }
+
+
+    function RequisitarListaDeHabitos() {
         useEffect(() => {
-            const promise = axios.get(`${URL}/habits"`, config);
+            const promise = axios.get(`${URL}/habits`, config);
 
             promise.then((response) => {
                 const { data } = response;
@@ -44,94 +135,87 @@ export default function TelaHabitos(){
                 const message = err.response.statusText;
                 alert(message);
             });
-
         }, []);
 
-
-    }*/
-
-    function renderizarTopoConteudo(){
-        return (
-            <TopoConteudo>
-                    <h2>Meus Hábitos</h2>
-                    <button onClick={() => adicionarCardHabito(true)}>
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
-                            <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0z" />
-                        </svg>
-                    </button>
-            </TopoConteudo>
-        );
     }
 
-
-/*
-
-    function adicionarHabito() {
-        
-        return(
-            <>  
-                <input type="text" placeholder="nome do hábito" />
-                <div className="dias">
-                    {
-                        diasDaSemana.map((diaSemana, index) => {
-                            const { dia, day } = diaSemana;
-                            const selecionado = diasSelecionados.some(dias => dias.day === day);
-                            return <BotaoDia
-                                key={index}
-                                dia={dia}
-                                day={day}
-                                selecionado={selecionado}
-                                aoSelecionar={ day => toggle(day)}
-                            />
-                        })
-                    }
-
-                </div>
-                <div><button className="cancelar" onClick={() => setVisivel(!visivel)}>Cancelar</button><button className="salvar">Salvar</button></div>
-            </>
-        );
-        
-    }*/
-
-    function listarHabitos(){
-        
-
-        
-
-        return (
-            <>
-            <div className="left">
-                <div><span>Tarefa 1</span></div>
-                <div className="dias"><button>D</button>
-                    <button>S</button> 
-                    <button>T</button>
-                    <button>Q</button>
-                    <button>Q</button>
-                    <button>S</button>
-                    <button>S</button>
-                </div>
-            </div>
-            <div className="right">
-                <img src={lixeira} alt="deletar" />
-            </div>
-            
-            </>
-        );
-    }
-
-
-
-    //const novoHabito = adicionarHabito();
-    const adicionado = listarHabitos();
-    const topoConteudo = renderizarTopoConteudo();
     
+    function renderizarListaDeHabitos(){
+
+        const habitos = listaDeHabitos.map((item, index) => {
+
+            const botoesDiadaSemana = diasDaSemana.map((diaDaSemana, index) => {
+                return (
+                    <BotaoDiaDaSemana type="button" enable={enable} key={index} id={index} days={item.days.map((e) => e)}>{diaDaSemana.day}</BotaoDiaDaSemana>
+                );
+            });
+
+            return(
+                <>
+                    <ContainerHabito>
+                        <TopoCardHabito>
+                            <span>{item.name}</span>
+                            <button onClick={(e) => deletarHabito(item, index, e)}>
+                                <ion-icon name="trash-outline"></ion-icon>
+                            </button>
+                        </TopoCardHabito>
+                        <Grid>
+                            {botoesDiadaSemana}
+                        </Grid>
+                    </ContainerHabito>
+                </>
+            );
+
+        });
+
+        if(listaDeHabitos.length > 0){
+            return(habitos);
+        } else {
+            return(
+                <span>Você não tem nenhum hábito cadastrado ainda. Adicione um hábito para começar a trackear.</span>
+            );
+        }
+
+
+    }
+
+    function deletarHabito(item, index, e){
+        let confirmacao = window.confirm("Você tem certeza que quer deletar este hábito?")
+        e.preventDefault();
+
+        if (confirmacao) {
+            const promise = axios.delete(`${URL}/habits/${item.id}`, config);
+
+            promise.then((response) => {
+                const promise = axios.get(`${URL}/habits`, config)
+
+                promise.then((response) => {
+                    const { data } = response;
+                    setListaDeHabitos(data);
+                });
+            });
+
+            promise.catch(err => {
+                alert("Não  foi possível apagar o hábito!");
+            })
+        }
+    }
+
+
+
+
+
+    const topoConteudo = renderizarTopoConteudo();
+    const listaHabitosRenderizada = renderizarListaDeHabitos();
+    const requisicaoDaListaDeHabitos = RequisitarListaDeHabitos();
 
     return(
         <>
             <Container>
                 <Header/>
                 {topoConteudo}
-            
+                {requisicaoDaListaDeHabitos}
+                {listaHabitosRenderizada}
                 <Footer />
             </Container>
         </>
@@ -182,130 +266,101 @@ const TopoConteudo = styled.div`
 
     button {
         border:none;
-        background-color: #f2f2f2;
+        background-color: #E5E5E5;
     }
+`;
+
+const BotaoDiaDaSemana = styled.button`
+    width: 30px;
+    height: 30px;
+    background: #${props => ((props.days.find((e) => e === props.id)) === undefined) ? "FFFFFF" : "CFCFCF"};
+    border: 1px solid #D5D5D5;
+    border-radius: 5px;
+    font-size: 20px;
+    color: #${props => ((props.days.find((e) => e === props.id)) === undefined) ? "DBDBDB" : "FFFFFF"};
+    margin-right: 4px;
+    cursor:pointer;
+    pointer-events: ${props => props.enable ? 'auto' : 'none'}; 
+    
 `
 
-const Habito = styled.div`
-
-    background-color: #FFFFFF;
+const ContainerHabito = styled.form`
     display: flex;
     flex-direction: column;
-    padding-left: 10px;
-    padding-right: 10px;
-    padding-top: 10px;
-    padding-right: 10px;
+    padding:18px;
+    background-color: #FFFFFF;
     border-radius: 5px;
-
-    margin: 15px 15px;
+    margin-bottom:29px;
+    font-family: 'Lexend Deca', sans-serif;
 
     input {
-
         width: 100%;
         height: 45px;
-        padding-left: 5px;
-        border: 1px solid #D4D4D4;
+        background: ${props => props.enable ? '#FFFFFF' : '#F2F2F2'};
+        border: 1px solid #D5D5D5;
         border-radius: 5px;
-
-
-        font-family: 'Lexend Deca';
-        font-style: normal;
-        font-weight: 400;
         font-size: 20px;
-        color: #DBDBDB;
-
-    
+        color:#666666;
+        padding: 10px;
+        outline: none;
+        pointer-events: ${props => props.enable ? 'auto' : 'none'};
+        align-items: flex-start;
     }
+   
+    ::placeholder {
+        color: ${props => props.enable ? '#DBDBDB' : '#AFAFAF'};
+        opacity: 1;
+};
+`
 
-    .dias {
-        margin-top: 10px;
-        margin-bottom: 15px;
-        display: flex;
-        justify-content: left;
-    }
+const Grid = styled.div`
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    margin-top: 8px;
+    align-items: flex-start;
+`
 
 
-
-    div {
-        display: flex;
-        justify-content: end;
-        margin-bottom: 15px;
-    }
+const ActionButtons = styled.div`
+    display: flex;
+    flex-direction: row;
+    justify-content:flex-end;
+    margin-top: 29px;
 
     button {
-        cursor: pointer;
         width: 84px;
         height: 35px;
-        margin-left: 10px;
-
-        font-family: Lexend Deca;
+        border:none;
+        background-color: #52B6FF;
+        border-radius: 5px;
+        color:#FFFFFF;
         font-size: 16px;
-        font-weight: 400;
-        text-align: center;
-        border: none;
-
+        opacity: ${props => props.enable ? '1' : '0.7'};
+        margin-left:15px;
+        pointer-events: ${props => props.enable ? 'auto' : 'none'};
+        cursor:pointer;
     }
 
     .cancelar {
-        background-color: #FFFFFF;
+        background: #FFFFFF;
         color: #52B6FF;
     }
+`
 
-    .salvar {
-        border-radius: 5px;
-        background-color: #52B6FF;
-        color: #FFFFFF;
-    }
-
-
-
-
-`;
-
-
-const Caixa = styled.div`
-    background-color: #FFFFFF;
+const TopoCardHabito = styled.div`
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
-    padding-left: 10px;
-    padding-right: 10px;
-    padding-top: 10px;
-    padding-right: 10px;
-    border-radius: 5px;
+    justify-content:space-between;
 
-    margin: 15px 15px;
-
-
-    .dias {
-        margin-top: 10px;
-        margin-bottom: 15px;
-        display: flex;
-        justify-content: left;
-    }
-
-    .dias button {
-        border: 1px solid #D4D4D4;
-        width: 30px;
-        height: 30px;
-        border-radius: 5px;
-        background-color: #FFFFFF;
-        margin-right: 5px;
-        
-        
-        font-family: 'Lexend Deca';
-        font-style: normal;
-        font-weight: 400;
-        font-size: 20px;
-        color: #DBDBDB;
-    }
-
-    div {
-        margin-top: 5px;
-        font-family: 'Lexend Deca';
-        font-style: normal;
-        font-weight: 400;
-        font-size: 20px;
+    ion-icon {
+        font-size:20px;
         color: #666666;
+        cursor:pointer;
     }
-`;
+
+    button {
+        background-color: #FFFFFF;
+        border:none;
+    }
+`
