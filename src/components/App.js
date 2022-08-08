@@ -13,7 +13,7 @@ import GlobalStyle from "../styles/globalStyles";
 
 export default function App(){
     const [user, setUser] = useState({});
-    const [porcentagem, setPorcentagem] = useState(10);
+    const [porcentagem, setPorcentagem] = useState(0);
 
     return(
         <>

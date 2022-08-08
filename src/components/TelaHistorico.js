@@ -8,6 +8,10 @@ export default function TelaHistorico(){
         <>
             <Container>
                 <Header/>
+                    <TopoConteudo>
+                        <h2>Histórico</h2>
+                        <span>Em breve você poderá ver o histórico dos seus hábitos aqui!</span>
+                </TopoConteudo>
                 <Footer />
             </Container>
         </>
@@ -34,7 +38,20 @@ const Container = styled.div`
     }
 `;
 
-
+const TopoConteudo = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 28px;
+    
+    h2 {
+        margin-top:112px;
+        margin-bottom: 17px;
+        font-family: 'Lexend Deca', sans-serif;
+        font-size: 23px;
+        color: #126BA5;
+    }
+`
 
 
 
